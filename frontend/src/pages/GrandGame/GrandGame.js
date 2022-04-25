@@ -30,11 +30,11 @@ import io from 'socket.io-client'
 
 export default function GrandGame() {
     // const roles = ['Erica', 'Pete', 'Norman']
-    
+
     const [role, setRole] = useState('')
     const [pageQuantity, setPageQuantity] = useState(4)
-    const [step, setStep] = useState(0) 
-    
+    const [step, setStep] = useState(0)
+
     const [socket, setSocket] = useState(null)
 
     const [round, setRound] = useState(1)
@@ -45,7 +45,7 @@ export default function GrandGame() {
         round_completed: 0,
         final_score: 100,
     })
-    
+
     const [messages, setMessages] = useState({
         round1: {
             toNorman: [],
@@ -68,7 +68,7 @@ export default function GrandGame() {
             levelOfWarning: []
         },
     })
-    
+
     const [roundFinished, setRoundFinished] = useState(false)
     const [resultReady, setResultReady] = useState(false)
 
@@ -79,7 +79,7 @@ export default function GrandGame() {
     const [messageToNorman, setMessageToNorman] = useState('')
     const [messageToPete, setMessageToPete] = useState('')
     const [messageFromErica, setMessageFromErica] = useState('')
-    
+
     const [petePower, setPetePower] = useState(true)
 
     const [normanStay, setNormanStay] = useState(true)
@@ -100,11 +100,11 @@ export default function GrandGame() {
 
     const [electricity, setElectricity] = useState(true)
 
-    const [ players, setPlayers ] = useState([])
+    const [players, setPlayers] = useState([])
 
     const normanRoles = ['NormanA', 'NormanB', 'NormanC'];
 
-  
+
 
     // new WebSocket(`wss://${window.location.host}`)
     // console.log()
@@ -120,9 +120,9 @@ export default function GrandGame() {
     }, [messageToNorman, messageToPete])
 
     useEffect(() => {
-        console.log("City Power now on: ", electricity )
+        console.log("City Power now on: ", electricity)
     }, [electricity])
-   
+
     const connectToSocket = () => {
         //////Socket///////////////////////////////////////////////////////////////////
         const socket = io()
@@ -171,30 +171,40 @@ export default function GrandGame() {
         }))
     }
 
-    useEffect(()=>{
-   
+    useEffect(() => {
+
         connectToSocket()
-        
+
         return () => {
             socket.close()
             console.log("socket closed: ")
         }
     }, [])
-// },[setSocket])
+    // },[setSocket])
 
     useEffect(() => {
-       console.log("messages: ", JSON.stringify(messages))
+        console.log("messages: ", JSON.stringify(messages))
     }, [messages])
 
     useEffect(() => {
         handleRoleChange(role)
     }, [role])
-    
-    useEffect(()=> {
-        console.log('NormanDecisions: ',normanDecisions)
+
+
+    /////////////////////round complete dececion logic////////////////////
+    useEffect(() => {
+        console.log('NormanDecisions: ', normanDecisions)
         console.log('PeteDecisions: ', peteDecisions)
 
         if ((normanDecisions[round - 1]) && (peteDecisions[round - 1])) {
+
+            ////// calculate socres here///////
+
+            ////// feed the date /////
+
+
+            //// render result page /////
+
             setResultReady(true)
             console.log('!!!!!!!Now result Ready!!!!!!!')
             console.log("Two Decisions: " + "norman: " + normanDecisions + "pete: " + peteDecisions)
@@ -202,14 +212,20 @@ export default function GrandGame() {
             console.log("result page is not ready yet: " + 'NormanDecisions: ' + normanDecisions + 'PeteDecisions: ' + peteDecisions)
         }
 
-    },[normanDecisions, peteDecisions])
+    }, [normanDecisions, peteDecisions])
 
-    // socket.emit('role')
+
+
+
+    const calculateScore = (normanS, ericaS, peteS) => {
+
+    }
+
 
     const giveRoleRandomly = () => {
         console.log('***************giveRoleRandomly clicked!**********')
 
-        setRole(role => ['Erica', 'Pete', 'NormanA', 'NormanB', 'NormanC'][Math.floor(Math.random()*3)])
+        setRole(role => ['Erica', 'Pete', 'NormanA', 'NormanB', 'NormanC'][Math.floor(Math.random() * 3)])
         // setRole(role => '')
 
         // socket.emit("role")
@@ -219,7 +235,7 @@ export default function GrandGame() {
 
         socket.emit("enter_room", 'hello entering', () => {
             console.log("you entered the room1")
-            
+
         })
 
         console.log('socket,,', socket)
@@ -227,26 +243,26 @@ export default function GrandGame() {
 
     const handleRoleChange = () => {
         switch (role) {
-         case 'Erica':
-            setPageQuantity(quantity => 4)
-            console.log("current role: ", role)
-            socket.emit("role", {role: role})
-            break;
-        case 'Pete':
-            setPageQuantity(quantity => 4)
-            console.log("current role:  ", role)
-            socket.emit("role", { role: role })
-            break;
-        case 'NormanA':
-        case 'NormanB':
-        case 'NormanC':
-            setPageQuantity(quantity => 6)
-            console.log("current role: ", role)
-            socket.emit("role", { role: role })
-            break;
-        default:
-            setPageQuantity(quantity => 0)
-            console.log("current role: none", role)
+            case 'Erica':
+                setPageQuantity(quantity => 4)
+                console.log("current role: ", role)
+                socket.emit("role", { role: role })
+                break;
+            case 'Pete':
+                setPageQuantity(quantity => 4)
+                console.log("current role:  ", role)
+                socket.emit("role", { role: role })
+                break;
+            case 'NormanA':
+            case 'NormanB':
+            case 'NormanC':
+                setPageQuantity(quantity => 6)
+                console.log("current role: ", role)
+                socket.emit("role", { role: role })
+                break;
+            default:
+                setPageQuantity(quantity => 0)
+                console.log("current role: none", role)
         }
     }
 
@@ -255,7 +271,7 @@ export default function GrandGame() {
         e.preventDefault()
 
         setPeteDecisions(prev => (
-           [...prev, petePower]
+            [...prev, petePower]
         ))
 
         setElectricity(petePower)
@@ -279,12 +295,14 @@ export default function GrandGame() {
         console.log("norman stay: " + normanStay + "which route: " + whichRoute)
 
         setNormanDecisions(prev => (
-            [...prev, {stay: normanStay,
-            whichRoute: whichRoute}]
+            [...prev, {
+                stay: normanStay,
+                whichRoute: whichRoute
+            }]
         ))
         // setNormanStay(true)
         // setWhichRoute('')
-        
+
         const normanData = {
             normanStay, whichRoute
         }
@@ -297,7 +315,7 @@ export default function GrandGame() {
         console.log('norman select: ', normanStay)
     }
 
-    const handleChangeWhichRoute =(e) => {
+    const handleChangeWhichRoute = (e) => {
         setWhichRoute(e.target.value)
         console.log('norman which route: ', e.target.value)
     }
@@ -316,15 +334,15 @@ export default function GrandGame() {
         socket.emit('erica_message', messages)
 
         console.log("current messages! Pete: " + messageToPete + "Norman: " + messageToNorman + "LevelOfWarning: " + levelOfWarning)
-        switch(round) {
+        switch (round) {
             case 1:
                 setMessages(prevState => ({
                     ...prevState, round1: {
                         toNorman: [...prevState.round1.toNorman, messageToNorman],
                         toPete: [...prevState.round1.toPete, messageToPete],
                         levelOfWarning: [...prevState.round1.levelOfWarning, levelOfWarning]
-                                            }       
-                                        
+                    }
+
                 }))
 
                 setLevelOfWarning('')
@@ -379,11 +397,11 @@ export default function GrandGame() {
                 break;
         }
 
-       
-        
+
+
         console.log("erica_messages on frontend: ", JSON.stringify(messages.round1))
 
-    } 
+    }
 
     const handleClick = () => {
         console.log("!final click!: ");
@@ -406,40 +424,40 @@ export default function GrandGame() {
 
     const ericas = [
         <Erica0 step={step} role setRole />,
-        <Erica1 step={step}/>,
-        <Erica2 setWaitPopupErica={setWaitPopupErica} waitPopupErica={waitPopupErica} handleSubmitErica={handleSubmitErica} round={round} handleChangeWarning={handleChangeWarning} handleChangeMessageToNorman={handleChangeMessageToNorman} handleChangeMessageToPete={handleChangeMessageToPete} levelOfWarning={levelOfWarning} messageToPete={messageToPete} messageToNorman={messageToNorman} ericaHealth={ericaHealth} players={players}/>,
-        <Erica3 step={step} ericaHealth={ericaHealth}/>,
-        <Erica4 step={step} ericaHealth={ericaHealth}/>
+        <Erica1 step={step} />,
+        <Erica2 setWaitPopupErica={setWaitPopupErica} waitPopupErica={waitPopupErica} handleSubmitErica={handleSubmitErica} round={round} handleChangeWarning={handleChangeWarning} handleChangeMessageToNorman={handleChangeMessageToNorman} handleChangeMessageToPete={handleChangeMessageToPete} levelOfWarning={levelOfWarning} messageToPete={messageToPete} messageToNorman={messageToNorman} ericaHealth={ericaHealth} players={players} />,
+        <Erica3 step={step} ericaHealth={ericaHealth} />,
+        <Erica4 step={step} ericaHealth={ericaHealth} />
     ];
-    
+
     const normans = [
         <Norman0 step={step} />,
         <Norman1 step={step} />,
-        <Norman2 step={step} handleChangeWhichRoute={handleChangeWhichRoute} normanStay={normanStay} handleSubmitNorman={handleSubmitNorman} handleChangeNormanStay={handleChangeNormanStay} popForm={popForm} setPopForm={setPopForm} round={round} electricity={electricity} normanQuestion={normanQuestion} normanHealth={normanHealth} messageToNorman={messageToNorman} role={role} messageFromErica = { messageFromErica}/>,
-        <Norman3 step={step} normanHealth={normanHealth}/>,
+        <Norman2 step={step} handleChangeWhichRoute={handleChangeWhichRoute} normanStay={normanStay} handleSubmitNorman={handleSubmitNorman} handleChangeNormanStay={handleChangeNormanStay} popForm={popForm} setPopForm={setPopForm} round={round} electricity={electricity} normanQuestion={normanQuestion} normanHealth={normanHealth} messageToNorman={messageToNorman} role={role} messageFromErica={messageFromErica} />,
+        <Norman3 step={step} normanHealth={normanHealth} />,
         <Norman4 step={step} />,
         <Norman5 step={step} />
     ];
-    
+
     const petes = [
         <Pete0 step={step} />,
         <Pete1 step={step} />,
-        <Pete2 step={step} handleChangePetePower={handleChangePetePower} handleSubmitPete={handleSubmitPete} popForm={popForm} setPopForm={setPopForm} round={round} electricity={electricity} normanQuestion={normanQuestion} peteHealth={peteHealth} messageToPete={messageToPete} messageFromErica={messageFromErica}/>,
-        <Pete3 step={step} peteHealth={peteHealth}/>
+        <Pete2 step={step} handleChangePetePower={handleChangePetePower} handleSubmitPete={handleSubmitPete} popForm={popForm} setPopForm={setPopForm} round={round} electricity={electricity} normanQuestion={normanQuestion} peteHealth={peteHealth} messageToPete={messageToPete} messageFromErica={messageFromErica} />,
+        <Pete3 step={step} peteHealth={peteHealth} />
     ];
-    
+
     const Buttons = () => (
         <section className='buttons' >
             {step > 0 && (
                 <Button
-                type="button"
-                onClick={() => {
-                    setStep(step - 1);
-                    console.log(step)
-                }}
-                style={{ margin: "0.5rem"}}
+                    type="button"
+                    onClick={() => {
+                        setStep(step - 1);
+                        console.log(step)
+                    }}
+                    style={{ margin: "0.5rem" }}
                 >
-                BACK
+                    BACK
                 </Button>
             )}
             {step === pageQuantity && (
@@ -447,7 +465,7 @@ export default function GrandGame() {
                     <Button onClick={handleClick}
                         style={{ margin: "0.5rem" }}
                     >
-                    SUBMIT
+                        SUBMIT
                     </Button>
                 </Link>
             )}
@@ -470,37 +488,37 @@ export default function GrandGame() {
         <div className="main">
             <div className="gameframe">
                 {/* {ericas[3]} */}
-            { role ?
-                <>
-                    { 
-                        role === 'Erica' && resultReady
-                            ? 
-                            ericas[3] 
-                            :
-                        role === 'Erica'
-                            ?
-                            ericas[step] 
-                            : 
-                        role === 'Pete' && resultReady
-                            ? 
-                            petes[3] 
-                            :
-                        role === 'Pete'
-                            ?
-                            petes[step] 
-                            : 
-                        normanRoles.includes(role) && resultReady
-                            ?
-                            normans[3] 
-                            :
-                            normans[step]
+                {role ?
+                    <>
+                        {
+                            role === 'Erica' && resultReady
+                                ?
+                                ericas[3]
+                                :
+                                role === 'Erica'
+                                    ?
+                                    ericas[step]
+                                    :
+                                    role === 'Pete' && resultReady
+                                        ?
+                                        petes[3]
+                                        :
+                                        role === 'Pete'
+                                            ?
+                                            petes[step]
+                                            :
+                                            normanRoles.includes(role) && resultReady
+                                                ?
+                                                normans[3]
+                                                :
+                                                normans[step]
                         }
 
-                    { step !== 2 && <Buttons/> }
-                </>
-                :
-                    <Instruction giveRoleRandomly={giveRoleRandomly} setRole={setRole} normans={normanRoles}/>
-            }
+                        {step !== 2 && <Buttons />}
+                    </>
+                    :
+                    <Instruction giveRoleRandomly={giveRoleRandomly} setRole={setRole} normans={normanRoles} />
+                }
             </div>
         </div>
     )
