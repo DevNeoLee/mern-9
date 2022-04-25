@@ -152,10 +152,22 @@ export default function GrandGame() {
 
         socket.on("norman_message", (data => {
             console.log('Norman data from Norman received: ', data)
+
+            setNormanDecisions(prev => (
+                [...prev, {
+                    stay: normanStay,
+                    whichRoute: whichRoute
+                }]
+            ))
         }))
 
         socket.on("pete_message", (data => {
             console.log('Pete data from Pete received: ', data)
+
+            setPeteDecisions(prev => (
+                [...prev, petePower]
+            ))
+
         }))
     }
 
@@ -477,7 +489,7 @@ export default function GrandGame() {
                             ?
                             petes[step] 
                             : 
-                        role === 'Norman' && resultReady
+                        normanRoles.includes(role) && resultReady
                             ?
                             normans[3] 
                             :

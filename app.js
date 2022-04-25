@@ -104,7 +104,7 @@ io.on("connection", socket => {
     socket.on('pete_message', (data) => {
         let room = io.sockets.adapter.rooms.get('room1')
         console.log('form content from pete: ', data)
-    socket.broadcast.to('room1').emit('pete_message', data)
+        socket.broadcast.to('room1').emit('pete_message', data)
         // socket.to('room1').emit('welcome', msg)
         // socket.to('room1').emit('welcome')
 
