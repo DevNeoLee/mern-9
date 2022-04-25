@@ -1,7 +1,7 @@
 
 import { Form } from 'react-bootstrap'
 
-export default function Radio({ value,label, name, inline }) {
+export default function Radio({ value,label, name, inline, required }) {
   return (
             <Form.Check
                 inline={inline}
@@ -10,6 +10,7 @@ export default function Radio({ value,label, name, inline }) {
                 value={value}
                 type="radio"
                 id={`radio-${name}-${label}`}
+                required= {required}
             />
         )
   }

@@ -9,7 +9,7 @@ import { Button, Form } from "react-bootstrap";
 import { useTransition, useSpring, animated } from "react-spring";
 
 
-export default function NormanForm({ handleNormanForm, setPopForm}) {
+export default function NormanForm({ handleSubmitNorman, handleChangeWhichRoute, normanStay, handleChangeNormanStay, handleNormanForm, setPopForm}) {
 
     const [stay, setStay] = useState(false);
 
@@ -35,28 +35,30 @@ export default function NormanForm({ handleNormanForm, setPopForm}) {
             {transition2((style, item) =>
                 <animated.div style={style} className="roleframe">
                     <p>
-                        Now time to decide, analyze the status of your house and the city</p>
-                    <Form onSubmit={setPopForm} onChange={ handleStay }>
-                        <Form.Group>
+                        Now time to decide, you check flood risk information.
+                        What is your decision?</p>
+                    <Form onSubmit={handleSubmitNorman} >
+                        <Form.Group onChange={handleChangeNormanStay}>
                             <div className="gameQuestion">
                                 <Form.Label htmlFor={`radio`}>You check flood risk indivation. What is your decision?</Form.Label>
-                                <Radio label='Stay' name="questionNorman2" />
-                                <Radio label='Evacuate' name="questionNorman2" />
-                                {
-                                    !stay && (
-                                        <Form.Group>
-                                            <div className="gameQuestion2">
-                                                <Form.Label htmlFor={`radio`}>Which way is your decision?</Form.Label>
-                                                    <Radio label='Route A' name="questionNorman3" />
-                                                    <Radio label='Route B' name="questionNorman3" />
-                                                    <Radio label='Route C' name="questionNorman3" /> 
-                                            </div>
-                                        </Form.Group>
-                                    )
-                                }
-                            <div className="buttons" style={{ margin: "15px 80px" }}><Button size="lg">Submit</Button></div>
+                                <Radio label='Stay' name="questionNorman2" value='true' />
+                                <Radio label='Evacuate' name="questionNorman2" value='false'/>
                             </div>
                         </Form.Group>
+                            {normanStay === 'false' && 
+                            (
+                                <Form.Group onChange={handleChangeWhichRoute}>
+                                    <div className="gameQuestion2">
+                                        <Form.Label htmlFor={`radio`}>Which way is your decision?</Form.Label>
+                                        <Radio label='Route A' name="questionNorman3" value="routeA" required/>
+                                        <Radio label='Route B' name="questionNorman3" value="routeB" required/>
+                                        <Radio label='Route C' name="questionNorman3" value="routeC" required/>
+                                    </div>
+                                </Form.Group>
+                            )
+                            }
+                        
+                        <div className="buttons" style={{ margin: "15px 80px" }}><Button size="lg" type="submit">Submit</Button></div>
                     </Form>
                 </animated.div>
             )}

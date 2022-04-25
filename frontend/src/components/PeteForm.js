@@ -32,11 +32,12 @@ export default function PeteForm({ handleSubmitPete, setPopForm, handleChangePet
                         <Form.Group  >
                             <div className="gameQuestion">
                                 <Form.Label htmlFor={`radio`}>You check flood risk indivation. What is your decision?</Form.Label>
-                                <Radio label='Shut down' name="questionPete2" value={false} />
-                                <Radio label='Keep providing electricity service' name="questionPete2" value={true}/>
+                                <Radio label='Shut down' name="questionPete2" value={false} required/>
+                                <Radio label='Keep providing electricity service' name="questionPete2" value={true} required/>
                                 <div className="buttons" style={{ margin: "15px 80px" }}><Button type="submit" size="lg">Submit</Button></div>
                             </div>
                         </Form.Group>
+                             
                     </Form>
                 </animated.div>
             )}

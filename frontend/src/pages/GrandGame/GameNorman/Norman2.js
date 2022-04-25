@@ -17,7 +17,7 @@ import { Link } from "react-router-dom"
 
 import { data } from './../dataGame'
 
-export default function Norman2({ popForm, setPopForm, messageFromErica, round, role, electricity, messageToNorman, step, normanQuestion, normanHealth }) {
+export default function Norman2({ handleChangeWhichRoute, handleSubmitNorman, handleChangeNormanStay, normanStay, popForm, setPopForm, messageFromErica, round, role, electricity, messageToNorman, step, normanQuestion, normanHealth }) {
 
     const [hover1, setHover1] = useState(false);
     const [hover2, setHover2] = useState(false);
@@ -145,7 +145,7 @@ export default function Norman2({ popForm, setPopForm, messageFromErica, round, 
     return (
         <>
             <div className={popup ? `normanPopup` : `normanPopup normanPopClose`}><NormanPopup setPopup={setPopup} /></div>
-            <div className={popForm ? `normanForm` : `normanForm normanFormClose`}><NormanForm setPopForm={setPopForm} handleNormanForm={handleNormanForm}/></div>
+            <div className={popForm ? `normanForm` : `normanForm normanFormClose`}><NormanForm handleChangeWhichRoute={handleChangeWhichRoute} handleSubmitNorman={handleSubmitNorman} handleChangeNormanStay={handleChangeNormanStay} normanStay={normanStay} setPopForm={setPopForm} handleNormanForm={handleNormanForm}/></div>
             <div className={waitPopup ? `waitModal` : `waitModal waitModalClose`}><WaitModalNorman handleWaitModal={handleWaitModal} /></div>
 
 

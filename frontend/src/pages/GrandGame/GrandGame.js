@@ -36,7 +36,8 @@ export default function GrandGame() {
     const [step, setStep] = useState(0) 
     
     const [socket, setSocket] = useState(null)
-    
+
+    const [round, setRound] = useState(1)
     const [user, setUser] = useState({
         role: '',
         ide: '',
@@ -44,7 +45,7 @@ export default function GrandGame() {
         round_completed: 0,
         final_score: 100,
     })
-
+    
     const [messages, setMessages] = useState({
         round1: {
             toNorman: [],
@@ -68,8 +69,10 @@ export default function GrandGame() {
         },
     })
     
+    const [roundFinished, setRoundFinished] = useState(false)
+    const [resultReady, setResultReady] = useState(false)
+
     const [peteDecisions, setPeteDecisions] = useState([])
-    
     const [normanDecisions, setNormanDecisions] = useState([])
 
     const [levelOfWarning, setLevelOfWarning] = useState('')
@@ -80,6 +83,9 @@ export default function GrandGame() {
     const [petePower, setPetePower] = useState(true)
 
     const [normanStay, setNormanStay] = useState(true)
+
+    const [whichRoute, setWhichRoute] = useState("")
+
     const [normanRoute, setNormanRoute] = useState('')
 
     const [popForm, setPopForm] = useState(false);
@@ -91,7 +97,6 @@ export default function GrandGame() {
     const [ericaHealth, setEricaHealth] = useState(100)
     const [peteHealth, setPeteHealth] = useState(100)
 
-    const [round, setRound] = useState(1)
 
     const [electricity, setElectricity] = useState(true)
 
@@ -133,10 +138,10 @@ export default function GrandGame() {
         })
 
         socket.on("erica_message", (msg) => {
-            console.log('message received: ', msg)
+            console.log('Erica message from Erica received: ', msg)
 
             setMessageFromErica(msg)
-            console.log('norman message window!', msg)
+
             setInterval(() => {
                 setPopForm(true)
                 setWaitPopupErica(true)
@@ -145,10 +150,13 @@ export default function GrandGame() {
 
         })
 
-        // socket.on("room1", msg => {
-        //     console.log('room1 message', msg)
+        socket.on("norman_message", (data => {
+            console.log('Norman data from Norman received: ', data)
+        }))
 
-        // })
+        socket.on("pete_message", (data => {
+            console.log('Pete data from Pete received: ', data)
+        }))
     }
 
     useEffect(()=>{
@@ -170,6 +178,20 @@ export default function GrandGame() {
         handleRoleChange(role)
     }, [role])
     
+    useEffect(()=> {
+        console.log('NormanDecisions: ',normanDecisions)
+        console.log('PeteDecisions: ', peteDecisions)
+
+        if ((normanDecisions[round - 1]) && (peteDecisions[round - 1])) {
+            setResultReady(true)
+            console.log('!!!!!!!Now result Ready!!!!!!!')
+            console.log("Two Decisions: " + "norman: " + normanDecisions + "pete: " + peteDecisions)
+        } else {
+            console.log("result page is not ready yet: " + 'NormanDecisions: ' + normanDecisions + 'PeteDecisions: ' + peteDecisions)
+        }
+
+    },[normanDecisions, peteDecisions])
+
     // socket.emit('role')
 
     const giveRoleRandomly = () => {
@@ -220,17 +242,54 @@ export default function GrandGame() {
         console.log('pete just submitted his decison form: ')
         e.preventDefault()
 
-        // setPeteDecisions(prev => {
-        //     prev.push(petePower)
-        // })
+        setPeteDecisions(prev => (
+           [...prev, petePower]
+        ))
 
         setElectricity(petePower)
+        // setPetePower(true)
+
+        // socket interaction
+        socket.emit('pete_message', petePower)
     }
 
     const handleChangePetePower = (e) => {
         setPetePower(e.target.value)
         console.log('pete power: ', e.target.value)
+
     }
+
+    //Norman handles
+    const handleSubmitNorman = (e) => {
+        console.log('Norman just submitted his form:')
+        e.preventDefault()
+
+        console.log("norman stay: " + normanStay + "which route: " + whichRoute)
+
+        setNormanDecisions(prev => (
+            [...prev, {stay: normanStay,
+            whichRoute: whichRoute}]
+        ))
+        // setNormanStay(true)
+        // setWhichRoute('')
+        
+        const normanData = {
+            normanStay, whichRoute
+        }
+        // socket interaction
+        socket.emit('norman_message', normanData)
+    }
+
+    const handleChangeNormanStay = (e) => {
+        setNormanStay(e.target.value)
+        console.log('norman select: ', normanStay)
+    }
+
+    const handleChangeWhichRoute =(e) => {
+        setWhichRoute(e.target.value)
+        console.log('norman which route: ', e.target.value)
+    }
+
 
     //erica communicating through SOCKET  + to do: save to MongoDB
     const handleSubmitErica = (e) => {
@@ -248,9 +307,10 @@ export default function GrandGame() {
         switch(round) {
             case 1:
                 setMessages(prevState => ({
-                    ...prevState, round1: {toNorman: [...prevState.round1.toNorman, messageToNorman],
-                                              toPete: [...prevState.round1.toPete, messageToPete],
-                                              levelOfWarning: [...prevState.round1.levelOfWarning, levelOfWarning]
+                    ...prevState, round1: {
+                        toNorman: [...prevState.round1.toNorman, messageToNorman],
+                        toPete: [...prevState.round1.toPete, messageToPete],
+                        levelOfWarning: [...prevState.round1.levelOfWarning, levelOfWarning]
                                             }       
                                         
                 }))
@@ -343,7 +403,7 @@ export default function GrandGame() {
     const normans = [
         <Norman0 step={step} />,
         <Norman1 step={step} />,
-        <Norman2 step={step} popForm={popForm} setPopForm={setPopForm} round={round} electricity={electricity} normanQuestion={normanQuestion} normanHealth={normanHealth} messageToNorman={messageToNorman} role={role} messageFromErica = { messageFromErica}/>,
+        <Norman2 step={step} handleChangeWhichRoute={handleChangeWhichRoute} normanStay={normanStay} handleSubmitNorman={handleSubmitNorman} handleChangeNormanStay={handleChangeNormanStay} popForm={popForm} setPopForm={setPopForm} round={round} electricity={electricity} normanQuestion={normanQuestion} normanHealth={normanHealth} messageToNorman={messageToNorman} role={role} messageFromErica = { messageFromErica}/>,
         <Norman3 step={step} normanHealth={normanHealth}/>,
         <Norman4 step={step} />,
         <Norman5 step={step} />
@@ -400,7 +460,30 @@ export default function GrandGame() {
                 {/* {ericas[3]} */}
             { role ?
                 <>
-                    { role === 'Erica' ? ericas[step] : role === 'Pete' ? petes[step] : normans[step]}
+                    { 
+                        role === 'Erica' && resultReady
+                            ? 
+                            ericas[3] 
+                            :
+                        role === 'Erica'
+                            ?
+                            ericas[step] 
+                            : 
+                        role === 'Pete' && resultReady
+                            ? 
+                            petes[3] 
+                            :
+                        role === 'Pete'
+                            ?
+                            petes[step] 
+                            : 
+                        role === 'Norman' && resultReady
+                            ?
+                            normans[3] 
+                            :
+                            normans[step]
+                        }
+
                     { step !== 2 && <Buttons/> }
                 </>
                 :
