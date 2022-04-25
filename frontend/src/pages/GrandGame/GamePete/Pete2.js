@@ -17,7 +17,7 @@ import { Link } from "react-router-dom"
 
 import { data } from './../dataGame'
 
-export default function Pete2({ popForm, setPopForm, messageFromErica, round, electricity, messageToPete, step, normanQuestion, peteHealth }) {
+export default function Pete2({ handleChangePetePower, handleSubmitPete, popForm, setPopForm, messageFromErica, round, electricity, messageToPete, step, normanQuestion, peteHealth }) {
 
     const [hover1, setHover1] = useState(false);
     const [hover2, setHover2] = useState(false);
@@ -145,7 +145,7 @@ export default function Pete2({ popForm, setPopForm, messageFromErica, round, el
     return (
         <>
             <div className={popup ? `petePopup` : `petePopup petePopClose`}><PetePopup setPopup={setPopup} /></div>
-            <div className={popForm ? `peteForm` : `peteForm peteFormClose`}><PeteForm setPopForm={setPopForm} handlePeteForm={handlePeteForm} /></div>
+            <div className={popForm ? `peteForm` : `peteForm peteFormClose`}><PeteForm setPopForm={setPopForm} handleSubmitPete={handleSubmitPete} handleChangePetePower={handleChangePetePower} /></div>
             <div className={waitPopup ? `waitModal` : `waitModal waitModalClose`}><WaitModalPete handleWaitModal={handleWaitModal} /></div>
 
             <div className="gameBlockContainer">
@@ -309,21 +309,6 @@ export default function Pete2({ popForm, setPopForm, messageFromErica, round, el
                                 <p>Electricity: <span>ON</span>{ }</p>
                             </div>
                         </div>
-                        {
-                            normanQuestion ?
-                                <Form>
-                                    <Form.Group>
-                                        <div className="gameQuestion">
-                                            <Form.Label htmlFor={`radio`}>You check flood risk indivation. What is your decision?</Form.Label>
-                                            <Radio label='Stay' name="questionNorman2" />
-                                            <Radio label='Evacuate' name="questionNorman2" />
-                                            <Button>Submit</Button>
-                                        </div>
-                                    </Form.Group>
-                                </Form>
-                                :
-                                null
-                        }
                     </div>
                     <div className="gameProgressBlock">
                         <ProgressBar now={peteHealth} style={{ fontSize: "1.1rem", height: "27px", borderRadius: "5px 5px 0 0"}} variant="primary" label={`Score: ${peteHealth} of 100`} />
